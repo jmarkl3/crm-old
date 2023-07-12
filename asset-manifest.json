@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/crm-old/static/css/main.1fd05658.css",
-    "main.js": "/crm-old/static/js/main.2e7d5a98.js",
-    "static/js/787.a2a4df3f.chunk.js": "/crm-old/static/js/787.a2a4df3f.chunk.js",
+    "main.js": "/crm-old/static/js/main.74912bac.js",
+    "static/js/787.4f1cfaca.chunk.js": "/crm-old/static/js/787.4f1cfaca.chunk.js",
     "static/media/forestStars.jpg": "/crm-old/static/media/forestStars.a770bb02cc4478193c11.jpg",
     "index.html": "/crm-old/index.html",
     "main.1fd05658.css.map": "/crm-old/static/css/main.1fd05658.css.map",
-    "main.2e7d5a98.js.map": "/crm-old/static/js/main.2e7d5a98.js.map",
-    "787.a2a4df3f.chunk.js.map": "/crm-old/static/js/787.a2a4df3f.chunk.js.map"
+    "main.74912bac.js.map": "/crm-old/static/js/main.74912bac.js.map",
+    "787.4f1cfaca.chunk.js.map": "/crm-old/static/js/787.4f1cfaca.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.1fd05658.css",
-    "static/js/main.2e7d5a98.js"
+    "static/js/main.74912bac.js"
   ]
 }
