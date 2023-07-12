@@ -22,6 +22,7 @@
 .column{
     width: 100%;   
     vertical-align: bottom;  
+    position: relative;
 }
 .barGreen{
     background-color: green;
@@ -50,4 +51,21 @@
     padding: 5px;
     border: 1px solid rgba(128, 128, 128, 0.309);
     cursor: crosshair;
+}
+.barHover{
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    z-index: 12;
+    visibility: none;
+    display: none;
+    width: 200px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(91, 91, 185, 0.637);
+
+}
+.column:hover .barHover{
+    visibility: visible;
+    display: inline-block;
 }

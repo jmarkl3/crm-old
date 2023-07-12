@@ -4,6 +4,13 @@ function LogItem(props) {
 
     const saveTimout = useRef(null)
 
+    
+    useEffect(()=>{
+        
+        console.log("props: ")
+        console.log(props)
+    },[])
+
     function keyPress(){
         // Clear the save timer
         clearTimeout(saveTimout.current)        
@@ -23,7 +30,7 @@ function LogItem(props) {
         <div className='closeButton' title="Delete Entry" onClick={() => props.deleteLogItem(props.logData)}>x</div>        
         <input id={'logDate' + props.logData.key} type={"date"} defaultValue={props.logData.date} onChange={keyPress}></input>
         <input id={'logTitle' + props.logData.key} placeholder='title' defaultValue={props.logData.title} onChange={keyPress}></input>
-        <textarea id={'logContent' + props.logData.key} placeholder='Day events: ' defaultValue={props.logData.content} onChange={keyPress}></textarea>    
+        <textarea id={'logContent' + props.logData.key} placeholder='Day events: ' defaultValue={props.data.content} onChange={keyPress}></textarea>    
     </div>
   )
 }

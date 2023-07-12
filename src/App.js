@@ -12,7 +12,7 @@ import Sidebar from './Components/Sidebar';
 import ContactMenu from './Components/ContactMenu';
 import ImageDetail from './Components/ImageDetail';
 import { initializeApp } from 'firebase/app'
-import { getDatabase, onValue, ref as dbRef, set, push, update, orderByValue } from 'firebase/database'
+import { getDatabase, onValue, ref as dbRef, set, push, update, orderByValue, get, ref } from 'firebase/database'
 import { getStorage, uploadBytes, ref as sRef, getDownloadURL, connectStorageEmulator } from 'firebase/storage'
 import moment from 'moment'
 import SpaceComponent from './Components/SpaceComponent';
@@ -23,9 +23,84 @@ import { isCompositeComponent } from 'react-dom/test-utils';
 import Auth from './Pages/Auth';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Scroller from './Pages/Scroller';
+import LogTest from './Pages/Log/LogTest';
 
 function App() {
   
+  //\\// ==================== ==================== Notes and TODO ==================== ==================== \\//\\
+  /*
+
+  DONE
+  log in
+  activated auth in the new db, created an account
+
+  DONE
+  created new db, loaded data from old db, downloaded it, uploaded it in firebase console, and switched to new db with firebaseSetup2
+    
+  DONE
+  transfer events data new userID
+  there is a function that loads the events array, converts it to an object, and saves it under the new userID 
+  the calendar component is already set up to load from this events object instead of the events array
+  DONE
+  make it so new events save to the new location in the proper format
+  DONE
+  transfer log data to new db under userID  
+  make it so new log items save in the corresponding place in the new db in the correct format
+
+  notes
+
+  DONE
+  just move the data from the current location in the db to userID/log in the new format
+
+  DONE
+  log items load from new location
+
+  log items save to new location when theyre updated
+  from the log item menu:
+    can change date of log item
+    can add new log item
+    can delete log item with a confirmation popup
+  update live page
+
+  update calendar data to new data location and in new format with dates as keys
+  update calendar loading so it loads from new location in a more efficient way using the date range
+  update where calendar data is saved to new db location
+  update live page
+
+  search feature in log
+    shows log items that have matching data
+  search feature in calendar
+    shows events in a list that have matching names or notes or contact notes
+    ability to check only match name, or note, or contact note content
+
+  update firebase rules
+
+
+
+  nvm with all that
+
+  make a backup of the current database
+  copy all of the contents of the old db into the new db and switch to that completly for safety
+  storage won't work though, would have to download all files and reupload with the same keys
+
+  create a project in the new account
+  create a repo in the new account
+  sign into the proper github account (or create a repo in the curretnly signed in account)
+
+
+
+  create crm account with new db
+
+  pull the data from the current database
+  encrypt the data
+  put it in the new database under the userID of the new crm account
+
+  set up firebase rules to only allow the user to access their own data
+
+  re-create the app from scratch using the new database
+
+ */
+
   //\\// ==================== ==================== Vars and Init ==================== ==================== \\//\\
   // #region
 
@@ -42,6 +117,7 @@ function App() {
   // Data Arrays
   const [contactsArray, setContactsArray] = useState([])
   const [eventsArray, setEventsArray] = useState([])
+  const [eventsObject, setEventsObject] = useState([])
   const [imageDetailArray, setImageDetailArray] = useState([])
     
   // Object Data
@@ -65,19 +141,32 @@ function App() {
   // Refs
   const tabDown = useRef(false)
   const firebase = useRef(null)
+  const firebase2 = useRef(null)
 
   useEffect(()=>{
     
     setUpKeyListener()
-    firebaseSetup()
+    // firebaseSetup()
+    firebaseSetup2()
     loadContacts()
-    loadEventsArray()
+    //loadEventsArray()
+    loadEventsObject()
     
-  },[])
+  },[userId])
 
   function firebaseSetup() {
     // Connect to the app and get refs to the db and storage
-    var app = initializeApp({
+    var app = initializeApp({      
+      // New DB:
+      // apiKey: "AIzaSyDSKYWDzFjAMLRFr7tVVA1vpp9mNy_p76Y",
+      // authDomain: "crm-old.firebaseapp.com",
+      // databaseURL: "https://crm-old-default-rtdb.firebaseio.com",
+      // projectId: "crm-old",
+      // storageBucket: "crm-old.appspot.com",
+      // messagingSenderId: "361196550608",
+      // appId: "1:361196550608:web:9c69613406421c4da361d5"
+      //
+      // Old db:
       apiKey: "AIzaSyDCrQSCE91lh7GYlr7eTFbX--e1NnvF7Uw",
       authDomain: "practice-79227.firebaseapp.com",
       databaseURL: "https://practice-79227-default-rtdb.firebaseio.com",
@@ -90,13 +179,84 @@ function App() {
     var storage = getStorage(app)
     var auth = getAuth()    
 
+    // var app2 = initializeApp({
+    // apiKey: "AIzaSyDSKYWDzFjAMLRFr7tVVA1vpp9mNy_p76Y",
+    // authDomain: "crm-old.firebaseapp.com",
+    // databaseURL: "https://crm-old-default-rtdb.firebaseio.com",
+    // projectId: "crm-old",
+    // storageBucket: "crm-old.appspot.com",
+    // messagingSenderId: "361196550608",
+    // appId: "1:361196550608:web:9c69613406421c4da361d5"
+    // })
+    // var db2 = getDatabase(app2)
+    // var storage2 = getStorage(app2)
+    // var auth2 = getAuth()    
+
     // Save a ref to the refs
     firebase.current = {app: app, db: db, storage: storage, auth: auth}
+    // firebase2.current = {app: app2, db: db2, storage: storage2, auth: auth2}
     
     onAuthStateChanged(firebase.current.auth, (user) => {
       if (user) {
         // When user is signed in save id and go to calendar
         setUserId(user.uid)
+        setPage("calendar")
+      } else {
+        // User is signed out
+        setUserId(null)
+        setPage("auth")
+      }
+    });
+
+  }  
+  function firebaseSetup2() {
+    // Connect to the app and get refs to the db and storage
+    var app = initializeApp({      
+      // New DB:
+      apiKey: "AIzaSyDSKYWDzFjAMLRFr7tVVA1vpp9mNy_p76Y",
+      authDomain: "crm-old.firebaseapp.com",
+      databaseURL: "https://crm-old-default-rtdb.firebaseio.com",
+      projectId: "crm-old",
+      storageBucket: "crm-old.appspot.com",
+      messagingSenderId: "361196550608",
+      appId: "1:361196550608:web:9c69613406421c4da361d5"
+      //
+      // Old db:
+      // apiKey: "AIzaSyDCrQSCE91lh7GYlr7eTFbX--e1NnvF7Uw",
+      // authDomain: "practice-79227.firebaseapp.com",
+      // databaseURL: "https://practice-79227-default-rtdb.firebaseio.com",
+      // projectId: "practice-79227",
+      // storageBucket: "practice-79227.appspot.com",
+      // messagingSenderId: "283438782315",
+      // appId: "1:283438782315:web:d913f1ed9d87b5401a1e2e"
+    })
+    var db = getDatabase(app)
+    var storage = getStorage(app)
+    var auth = getAuth()    
+
+    // var app2 = initializeApp({
+    // apiKey: "AIzaSyDSKYWDzFjAMLRFr7tVVA1vpp9mNy_p76Y",
+    // authDomain: "crm-old.firebaseapp.com",
+    // databaseURL: "https://crm-old-default-rtdb.firebaseio.com",
+    // projectId: "crm-old",
+    // storageBucket: "crm-old.appspot.com",
+    // messagingSenderId: "361196550608",
+    // appId: "1:361196550608:web:9c69613406421c4da361d5"
+    // })
+    // var db2 = getDatabase(app2)
+    // var storage2 = getStorage(app2)
+    // var auth2 = getAuth()    
+
+    // Save a ref to the refs
+    firebase.current = {app: app, db: db, storage: storage, auth: auth}
+    // firebase2.current = {app: app2, db: db2, storage: storage2, auth: auth2}
+    
+    onAuthStateChanged(firebase.current.auth, (user) => {
+      if (user) {
+        // When user is signed in save id and go to calendar
+        setUserId(user.uid)
+        console.log("set user ID to user.uid")
+        console.log(user.uid)
         setPage("calendar")
       } else {
         // User is signed out
@@ -188,6 +348,59 @@ function App() {
         }                
     })
   }
+  // #endregion
+
+  //\\// ==================== ==================== Data Conversion (New DB Migration) ==================== ==================== \\//\\
+  // #region
+
+  // This logs the entire database and saves the json in state to be downloaded
+  const [fullJson, setFullJson] = useState({})
+  function logDatabase(){
+    onValue(ref(firebase.current.db, "/"), snap => {
+      console.log("all data:")
+      console.log(snap.val())
+      setFullJson(snap.val())
+    })
+  }
+
+  // Load the events array and convert it to a object, then save that object under the userID
+  function loadEventsArray(){
+    if(firebase.current)
+      onValue(dbRef(firebase.current.db, "events"), eventsSnap => {       
+        console.log("eventsSnap") 
+        console.log(eventsSnap.val()) 
+        var tempArray = []        
+        eventsSnap.forEach(eventSnap => {
+          
+          var tempEvent = eventSnap.val()
+
+          tempEvent.name = NumbersToString(tempEvent.name)
+          tempEvent.notes = NumbersToString(tempEvent.notes)
+          tempEvent.key = eventSnap.key
+
+          tempArray.push(tempEvent)
+
+        })
+        setEventsArray(tempArray)
+
+        let eventsObject = {}
+        tempArray.forEach(event => {
+          if(!eventsObject[event.date])
+            eventsObject[event.date] = {}
+          eventsObject[event.date][event.key] = event
+        })
+        
+        console.log("eventsObject")
+        console.log(eventsObject)
+        saveEventsObject(eventsObject)
+
+        console.log(Object.values(eventsObject["2022-01-18"]))
+      })
+  }
+  function saveEventsObject(_eventsObject){    
+    set(ref(firebase.current.db, userId+"/events"), _eventsObject)
+
+  }
 
   // #endregion
 
@@ -207,7 +420,7 @@ function App() {
           firebase={firebase}          
           getContactData={getContactData}
           eventArray={eventsArray}
-
+          eventsObject={eventsObject}
           // Used to open events. If there is no event creates one
           openEvent={openEvent}
 
@@ -261,9 +474,10 @@ function App() {
       )
       if(page === "log")
       return(
-        <Log
-          firebase={firebase}
-        ></Log>        
+        // <Log
+        //   firebase={firebase}
+        // ></Log>        
+        <LogTest firebase={firebase} userId={userId} StringToNumbers={StringToNumbers} NumbersToString={NumbersToString}></LogTest>
       )
     if(page === "notes")
       return(
@@ -468,23 +682,12 @@ function App() {
 
     return tempArray
   }
-  function loadEventsArray(){
-    if(firebase.current)
-      onValue(dbRef(firebase.current.db, "events"), eventsSnap => {        
-        var tempArray = []        
-        eventsSnap.forEach(eventSnap => {
-          
-          var tempEvent = eventSnap.val()
 
-          tempEvent.name = NumbersToString(tempEvent.name)
-          tempEvent.notes = NumbersToString(tempEvent.notes)
-          tempEvent.key = eventSnap.key
-
-          tempArray.push(tempEvent)
-
-        })
-        setEventsArray(tempArray)
-      })
+  function loadEventsObject(){
+    console.log("loadEventsObject")
+    onValue(dbRef(firebase.current.db, userId+"/events"), eventsSnap => {      
+      setEventsObject(eventsSnap.val())      
+    })
   }
   // #endregion
   
@@ -525,6 +728,8 @@ function App() {
   }
   
   function updateEventDb(_eventData){
+    console.log("updateEventDb")
+    console.log(_eventData)
 
     if(!_eventData)
       return
@@ -533,14 +738,16 @@ function App() {
     if(_eventData.key == null){
       
       // Create a ref for a new event
-      var ref = push(dbRef(firebase.current.db, "events/"))
-      
+      var ref = push(dbRef(firebase.current.db, userId+"/events/" + _eventData.date))
+      console.log(userId+"/events/")
+      console.log(ref)
+
       // Add the key to the event data
       var tempEventData = _eventData
       tempEventData.key = ref.key
 
-      tempEventData.name = StringToNumbers(tempEventData.name)
-      tempEventData.notes = StringToNumbers(tempEventData.notes)
+      // tempEventData.name = StringToNumbers(tempEventData.name)
+      // tempEventData.notes = StringToNumbers(tempEventData.notes)
       
       // Put it in the db
       set(ref, tempEventData)
@@ -551,7 +758,7 @@ function App() {
       tempEventData.name = StringToNumbers(tempEventData.name)
       tempEventData.notes = StringToNumbers(tempEventData.notes)
       
-      var ref = dbRef(firebase.current.db, "events/"+_eventData.key)
+      var ref = dbRef(firebase.current.db, userId+"/events/"+ _eventData.date+"/"+_eventData.key)
 
       // Put it in the db
       set(ref, tempEventData)
@@ -635,8 +842,15 @@ function App() {
   // #endregion
 
   return (
-    <div className="App" id='mainApp' onClick={closeSidebar}>
-
+    <div className="App" id='mainApp' onClick={closeSidebar}>            
+      {/* <div onClick={()=>logDatabase()}>Log DBs</div> */}
+      {/* <div onClick={()=>loadEventsArray()}>Transfer Events</div> */}
+      {/* <a type="button"
+        href={`data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(fullJson))}`}
+        download={"db.json"}
+        >
+          download json
+      </a> */}
       <div>
         {userId &&  <Sidebar
           setPage={setPage}
@@ -666,7 +880,8 @@ function App() {
             getContactData={getContactData}
             firebase={firebase}
             contactsArray={contactsArray}
-            updateContactDb={updateContactDb}               
+            updateContactDb={updateContactDb} 
+            userId={userId}              
           ></EventMenu>
         }        
         {displayImageDetail &&

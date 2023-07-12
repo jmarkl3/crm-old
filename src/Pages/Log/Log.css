@@ -1,0 +1,102 @@
+.logPage{
+    height: 100vh;
+    width: 100%;
+    padding-top: 20px;
+    overflow-y: auto;
+    background-color: rgba(87, 87, 87, 0.466);
+    background-image: linear-gradient(rgba(128, 128, 128, 0), rgba(0, 0, 0, 0.5));
+}
+.logItem{
+    width: 95%;    
+    position: relative;    
+    margin-top: 5px;
+    border-radius: 3px;
+    display: inline-block;    
+}
+.logItem textarea{
+    min-width: 100%;
+    max-width: 100%;
+    height: 100px;    
+    overflow-y: auto;
+    outline: none;
+    border: none;
+    padding: 10px;        
+    box-sizing: border-box;
+    border-radius: 3px;
+    box-shadow: 0 0 10px black inset; 
+    background-color: rgba(85, 75, 85, 0.7);
+    background-image: linear-gradient(rgba(121, 121, 121, 0), rgba(0, 0, 0, 0.2));
+}
+.logTopBar{    
+    display: inline-block;
+    padding-bottom: 10px;
+}
+.logTopBar input{
+    height: 35px;
+    width: 120px;
+    margin: 0 5px;
+    border-radius: 3px;
+    box-shadow: 0 0 10px black inset; 
+    background-color: rgba(85, 75, 85, 0.7);
+    background-image: linear-gradient(rgba(121, 121, 121, 0), rgba(0, 0, 0, 0.2));
+}
+.arrowButton{
+    display: inline-block;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 3px;
+    user-select: none;
+    cursor: pointer;
+    margin-top: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.479);
+    background-image: linear-gradient(rgba(121, 121, 121, 0), rgba(0, 0, 0, 0.2));
+    transition: 500ms;
+    margin: 0 5px;
+}
+.arrowButton:hover{
+    transform: scale(0.98);
+
+}
+.infoCircle{
+    border-radius: 50%;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(68, 68, 68, 0.5);
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    user-select: none;  
+    font-size: 12px;  
+}
+.logEntryMenu{
+    display: none;
+    height: 60px;
+    width: 120px;
+    background-color: gray;
+    position: absolute;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.infoCircle:hover .logEntryMenu{
+    display: block;
+}
+.logEntryMenu input{
+    cursor: pointer;
+}
+.infoCircleInfo{
+    background-color: rgba(68, 68, 68, 0.5);;   
+    width: 100px;
+    height: 20px;
+    padding: 5px 10px;
+}
+
+.search{
+    width: 240px;   
+    display: inline-block;    
+    margin: 0 10px;
+}
+.search input{
+    width: calc(100% - 60px);   
+}

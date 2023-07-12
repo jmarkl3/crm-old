@@ -5,8 +5,34 @@ import moment from "moment"
 import ArrowButtons from '../Components/ArrowButtons'
 import EventMenu from '../Components/EventMenu'
 
-function Calendar(props) {
+/*
 
+  A better data structure:
+  userID/events/date: [{event1}, {event2}, ...]
+  load events into object
+  create calendar array
+  put events into calendar array based on O(1) access with date as key 
+  map calendar array to screen
+
+  or
+  userID/events/year/month{
+    day: [{event1}, {event2}, ...],
+    ...
+  }
+
+  TODO
+  DONE
+  convert existing events to new data structure
+  DONE
+  save, load, and display existing date
+
+  update add and update event functions to save in new db location
+
+
+*/
+
+function Calendar(props) {
+  
   const [calendarArray, setCalendarArray] = useState([])
 
   useEffect(()=>{    
@@ -14,23 +40,8 @@ function Calendar(props) {
     // Builds a calendar (array of days) and places events in those days. Puts that in state and maps it to screen
     refreshCalendar(props.dayOfFocus)
 
-  },[props.eventArray, props.dayOfFocus])
+  },[props.eventsObject, props.dayOfFocus])
   
-  function nextMonth(){
-    var newDay = props.dayOfFocus.clone().add(1, "month")
-    refreshCalendar(newDay)
-    props.setDayOfFocus(newDay)
-  }
-  function lastMonth(){    
-    var newDay =props.dayOfFocus.clone().subtract(1, "month")
-    refreshCalendar(newDay)
-    props.setDayOfFocus(newDay)
-  }
-
-  function refreshCalendar(_day){    
-    setCalendarArray(createCalendarArray(createMonthArray(_day), props.eventArray))
-  }
-
   function createMonthArray(_day){        
 
     if(!_day)
@@ -49,14 +60,37 @@ function Calendar(props) {
     return tempArray
   }
 
-  function createCalendarArray(_monthArray, _eventArray){
-    
+  function nextMonth(){
+    var newDay = props.dayOfFocus.clone().add(1, "month")
+    refreshCalendar(newDay)
+    props.setDayOfFocus(newDay)
+  }
+  function lastMonth(){    
+    var newDay =props.dayOfFocus.clone().subtract(1, "month")
+    refreshCalendar(newDay)
+    props.setDayOfFocus(newDay)
+  }
+
+  function refreshCalendar(_day){    
+    setCalendarArray(createCalendarArray(createMonthArray(_day), props.eventArray))
+  }
+
+ 
+
+  function createCalendarArray(_monthArray, _eventArray){  
     var temCalendarArray = [..._monthArray]
     temCalendarArray.forEach(dayData => {
-      _eventArray.forEach(eventData => {
-        if(dayData.moment.isSame(eventData.date, "day") && dayData.moment.isSame(eventData.date, "month"))
-          dayData.events.push(eventData)
-      })
+      // console.log("checking "+dayData.moment.format("YYYY-MM-DD"))
+      // console.log("props.eventsObject["+dayData.moment.format("YYYY-MM-DD")+"]")
+      // console.log(props.eventsObject[dayData.moment.format("YYYY-MM-DD")])
+
+      if(props.eventsObject && props.eventsObject[dayData.moment.format("YYYY-MM-DD")]){
+        dayData.events = Object.values(props.eventsObject[dayData.moment.format("YYYY-MM-DD")])
+      }
+      // _eventArray.forEach(eventData => {
+      //   if(dayData.moment.isSame(eventData.date, "day") && dayData.moment.isSame(eventData.date, "month"))
+      //     dayData.events.push(eventData)
+      // })
     })
 
     return temCalendarArray

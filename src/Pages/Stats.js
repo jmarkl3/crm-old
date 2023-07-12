@@ -145,9 +145,13 @@ function Stats(props) {
             totalC: 0,
             completeC: 0,
             openC: 0,
+            yellowCArray: [],
             scheduledC: 0,
+            blueCArray: [],
             greenC: 0, 
+            greenCArray: [],
             grayC:  0,
+            grayCArray: [],
             darkGreenC: 0,          
             lightBlue: 0,          
             positiveRate: 0,          
@@ -184,6 +188,7 @@ function Stats(props) {
         tempStatsObject2.months[month].totalD++
         tempStatsObject2.totalD++
       }
+
 
       // Each light blue counts as 1 light blue
       if(event.color == "eventLightBlue"){
@@ -225,11 +230,20 @@ function Stats(props) {
         if(  event.color === "eventYellow" ){
           tempStatsObject2.months[month].openC++
           tempStatsObject2.openC++
+          // Add event to an array that can be displayed on the bars
+          tempStatsObject2.months[month].yellowCArray?.push(event)
+
         }
 
         // These are the event types that count as scheduled c
-        if(  event.color === "eventBlue" )
+        if(  event.color === "eventBlue" ){
+
           tempStatsObject2.scheduledC++
+        
+          // Add event to an array that can be displayed on the bars
+          tempStatsObject2.months[month]?.blueCArray?.push(event)
+
+        }
 
         // For green events
         if(event.color == "eventLightGreen" || event.color == "eventGreen"){
@@ -241,6 +255,9 @@ function Stats(props) {
           // Add to list of the contact keys with green cycles
           tempStatsObject2.greenContactKeys[event.imageKey] = true     
 
+          // Add event to an array that can be displayed on the bars
+          tempStatsObject2.months[month]?.greenCArray?.push(event)
+          
           // Get the number of cycles before, add 1, push onto array          
           // only add if there is none before (so maybe use an object)          
           
@@ -265,6 +282,8 @@ function Stats(props) {
         if(event.color == "eventGray"){
           tempStatsObject2.months[month].grayC++
           tempStatsObject2.grayC++
+          // Add event to an array that can be displayed on the bars
+          tempStatsObject2.months[month]?.grayCArray?.push(event)
         }
                     
         if(event.color == "eventDarkGreen"){
@@ -451,7 +470,13 @@ function Stats(props) {
                 <div className='container'>
                   <div className='columnContainer'>
                     <div>{month.greenC < 2 && month.greenC}</div>
-                    <div className='column barGreen' style={{height: (month.greenC * 20)+"px"}}>{month.greenC >= 2 && month.greenC}</div>
+                    <div className='column barGreen' style={{height: (month.greenC * 20)+"px"}}>{month.greenC >= 2 && month.greenC}
+                      <div className="barHover">
+                        {month.greenCArray.map(event => (
+                          <div>{props.getContactData(event?.imageKey)?.name}</div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                   <div className='columnContainer'>
                     <div>{month.lightBlue < 2 && month.lightBlue}</div>
@@ -463,8 +488,20 @@ function Stats(props) {
                   </div>
                   <div className='columnContainer'>
                     {month.grayC < 2 && month.grayC}                    
-                    <div className='column barYellow' style={{height: (month.openC * 20)+"px"}}>{month.openC >= 2 && month.openC}</div>
-                    <div className='column barGray' style={{height: (month.grayC * 20)+"px"}}>{month.grayC > 2 && month.grayC}</div>
+                    <div className='column barYellow' style={{height: (month.openC * 20)+"px"}}>{month.openC >= 2 && month.openC}
+                      <div className="barHover">
+                        {month.yellowCArray.map(event => (
+                          <div>{props.getContactData(event?.imageKey)?.name}</div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className='column barGray' style={{height: (month.grayC * 20)+"px"}}>{month.grayC > 2 && month.grayC}
+                      <div className="barHover">
+                        {month.grayCArray.map(event => (
+                          <div>{props.getContactData(event?.imageKey)?.name}</div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
                 {month.name}

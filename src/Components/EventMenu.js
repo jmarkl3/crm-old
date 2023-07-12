@@ -27,6 +27,9 @@ function EventMenu(props) {
 
     setUpKeyListener()
 
+    console.log("props.userId")
+    console.log(props.userId)
+
   },[])
 
   const tabDown = useRef(false)
@@ -87,9 +90,9 @@ function EventMenu(props) {
 
 
   function deleteEvent(){
-    
+    console.log("delete event "+props.userId+"/events/"+props.selectedEvent.date+"/"+props.selectedEvent.ke)    
     if(props.selectedEvent.key)      
-      set(dbRef(props.firebase.current.db, "events/"+props.selectedEvent.key), null)
+      set(dbRef(props.firebase.current.db, props.userId+"/events/"+props.selectedEvent.date+"/"+props.selectedEvent.key), null)
     
       props.setDisplayEventMenu(false)    
     
@@ -162,10 +165,7 @@ function EventMenu(props) {
     }, 1000);
   }
 
-  function updateContactNotes(){
-    console.log("updating contact notes to: ")
-    console.log(contactNotesRef.current.value)
-    
+  function updateContactNotes(){    
     // If there is no selected event contact don't update anything
     if(!eventContact)
       return
