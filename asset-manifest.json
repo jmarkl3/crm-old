@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/crm2/static/css/main.be81295a.css",
+    "main.js": "/crm2/static/js/main.317a3306.js",
+    "static/js/787.a2a4df3f.chunk.js": "/crm2/static/js/787.a2a4df3f.chunk.js",
+    "static/media/forestStars.jpg": "/crm2/static/media/forestStars.a770bb02cc4478193c11.jpg",
+    "index.html": "/crm2/index.html",
+    "main.be81295a.css.map": "/crm2/static/css/main.be81295a.css.map",
+    "main.317a3306.js.map": "/crm2/static/js/main.317a3306.js.map",
+    "787.a2a4df3f.chunk.js.map": "/crm2/static/js/787.a2a4df3f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.be81295a.css",
+    "static/js/main.317a3306.js"
+  ]
+}
