@@ -30,6 +30,10 @@ function App() {
   //\\// ==================== ==================== Notes and TODO ==================== ==================== \\//\\
   /*
 
+  entire app is pretty janky 
+  probably should restart with redux
+
+
   DONE
   log in
   activated auth in the new db, created an account

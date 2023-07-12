@@ -252,8 +252,7 @@ function LogTest(props) {
           <div className='arrowButton' onClick={addEntry}>{"New"}</div>
           {/* <div className='arrowButton' onClick={logLog}>{"Log Log"}</div> */}
           {/* <div className='arrowButton' onClick={()=>setShowAuthMenu(true)}>{"👤"}</div> */}
-        </div>
-        <div onClick={transferLog}>transferLog</div>
+        </div>        
         {logRangeArray().map(data => (
           <>
             <LogItem updateEntryDate={updateEntryDate} data={data} NumbersToString={props.NumbersToString} key={data.date} firebase={props.firebase} StringToNumbers={props.StringToNumbers} userId={props.userId}></LogItem>            
