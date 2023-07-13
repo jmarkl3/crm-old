@@ -171,18 +171,16 @@ function ContactMenu(props) {
 
   // Db upload 
   function addImage(file){
-  
-    // Display it immediately
+     // Display it immediately
     setImageArray([URL.createObjectURL(file), ...imageArray])
     
     //Upload to db (adding a random number at the end so it doesn't over write)
     uploadBytes(sRef(props.firebase.current.storage, "images2/"+props.selectedContact.key + (Math.random())*1000), file).then(imageUpload => {
       getDownloadURL(imageUpload.ref).then(imageUrl => {
-
         // Keep track of the current image urls so multiple can be uploaded and correct array will be put in the db (state will not be accurate here)
         dbImages.current = [imageUrl, ...dbImages.current ]
-        set(dbRef(props.firebase.current.db, "images2/"+props.selectedContact.key+"/images"), dbImages.current)
-           
+        set(dbRef(props.firebase.current.db, "images2/"+props.selectedContact.key+"/images"), dbImages.current)        
+
       })
     })
   }

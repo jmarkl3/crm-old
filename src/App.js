@@ -759,8 +759,8 @@ function App() {
     }else{
 
       var tempEventData = _eventData
-      tempEventData.name = StringToNumbers(tempEventData.name)
-      tempEventData.notes = StringToNumbers(tempEventData.notes)
+      // tempEventData.name = StringToNumbers(tempEventData.name)
+      // tempEventData.notes = StringToNumbers(tempEventData.notes)
       
       var ref = dbRef(firebase.current.db, userId+"/events/"+ _eventData.date+"/"+_eventData.key)
 
